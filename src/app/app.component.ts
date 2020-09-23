@@ -15,7 +15,10 @@ export class AppComponent implements OnInit {
     private http: HttpClient
   ) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    console.log(this.constructor.name + ' ngOnInit started.');
+    this.fetchPosts();
+  }
 
   onCreatePost(postData: { title: string; content: string }) {
     // Send Http request
@@ -36,9 +39,20 @@ export class AppComponent implements OnInit {
 
   onFetchPosts() {
     // Send Http request
+    console.log(this.constructor.name + ' onFetchPosts started.');
+    this.fetchPosts();
   }
 
   onClearPosts() {
     // Send Http request
+  }
+
+  //This method allow us to get the all Posts
+  private fetchPosts() {
+    this.http
+      .get('https://httpangular-a664a.firebaseio.com/posts.json')
+      .subscribe(posts => {
+        console.log(posts);
+      });
   }
 }
