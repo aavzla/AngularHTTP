@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 //Imported from the angular common http.
 import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs/operators'
 
 @Component({
   selector: 'app-root',
@@ -51,6 +52,22 @@ export class AppComponent implements OnInit {
   private fetchPosts() {
     this.http
       .get('https://httpangular-a664a.firebaseio.com/posts.json')
+      .pipe(map(responseData => {
+        const postsArray = [];
+        for (const key in responseData) {
+          //hasOwnProperty checks if the array contains the key as a property.
+          //This is to get only own properties of an object and not inherited ones.
+          //Or, to avoid trying to access the property of a prototype.
+          if (responseData.hasOwnProperty(key)) {
+            //The spread operator will take all key-value pairs of the responseData[key] and separate them by coma.
+            //The result will be like { content: value, title: value }.
+            //Because the object will have a coma and a key - value with id and the key as a value.
+            //The end result will be { content: value, title: value, id: key }.
+            postsArray.push({ ...responseData[key], id: key });
+          }
+        }
+        return postsArray;
+      }))
       .subscribe(posts => {
         console.log(posts);
       });
