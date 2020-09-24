@@ -51,13 +51,15 @@
   </div>
   <div class="row">
     <div class="col-xs-12 col-md-6 col-md-offset-3">
-      <p *ngIf="loadedPosts.length === 0">No posts available!</p>
-      <ul *ngIf="loadedPosts.length > 0" class="list-group">
+      <p *ngIf="loadedPosts.length === 0 && !isFetching">No posts available!</p>
+      <ul *ngIf="loadedPosts.length > 0 && !isFetching" class="list-group animate-bottom">
         <li *ngFor="let post of loadedPosts" class="list-group-item">
           <h3>{{ post.title }}</h3>
           <p>{{ post.content }}</p>
         </li>
       </ul>
+      <div *ngIf="isFetching" class="loader"></div>
+      <!--<p *ngIf="isFetching">Loading...</p>-->
     </div>
   </div>
 </div>

@@ -11,12 +11,16 @@ import { Post } from './post.model';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  loadedPosts: Post[] = [];
+  loadedPosts: Post[];
+  isFetching: boolean;
 
   constructor(
     //Injected to handle HTTP communications.
     private http: HttpClient
-  ) { }
+  ) {
+    this.loadedPosts = [];
+    this.isFetching = false;
+  }
 
   ngOnInit() {
     console.log(this.constructor.name + ' ngOnInit started.');
@@ -55,6 +59,9 @@ export class AppComponent implements OnInit {
 
   //This method allow us to get the all Posts
   private fetchPosts() {
+    
+    this.isFetching = true;
+
     //The object received from the DB, it is an array of key-value object.
     //Because, we do not know the property name of the key, we use the property placeholder.
     //The property placeholder [] define that we assign the property name key to this string key.
@@ -88,6 +95,7 @@ export class AppComponent implements OnInit {
         }))
       .subscribe(posts => {
         //console.log(posts);
+        this.isFetching = false;
         this.loadedPosts = posts;
       });
   }
