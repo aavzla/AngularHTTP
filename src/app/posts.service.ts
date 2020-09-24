@@ -1,67 +1,42 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-//Imported from the angular common http.
-//import { HttpClient } from '@angular/common/http';
-//import { map } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http'
+import { map } from 'rxjs/operators';
 //Implement the Subject (Observable) with subscription to communicate from the Service to the Component.
-import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 
 import { Post } from './post.model';
+import { title } from 'process';
 
-import { PostsService } from './posts.service';
+@Injectable({ providedIn: 'root' })
+export class PostsService {
+  postSubject: Subject<Post[]>;
 
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
-})
-export class AppComponent implements OnInit, OnDestroy {
-  loadedPosts: Post[];
-  isFetching: boolean;
-  private postsSubscription: Subscription;
+  constructor(private http: HttpClient) {
+    this.postSubject = new Subject<Post[]>();
+  }
 
-  constructor(
-    //Injected to handle HTTP communications.
-    //private http: HttpClient,
-    private postsService: PostsService
+  createAndStorePost(
+    postData: Post
+    //title: string, content: string
   ) {
-    this.loadedPosts = [];
-    this.isFetching = false;
+    //The scenario when we receive the fields separated.
+    //const postData: Post = { title: title, content: content };
+    this.http
+      //V1: Using TypeScript definition to resolve the definition of the object from the DB into a Model.
+      //.post(
+      //V2: Using HTTPClient to handle the recognition and casting of the object from the DB into a Model.
+      .post<{ name: string }>(
+        'https://httpangular-a664a.firebaseio.com/posts.json',
+        postData
+      )
+      // In order to send the POST, Angular demands that we need to subscribe.
+      // It could be an empty subscription without the call back if we wanted.
+      .subscribe(responseData => {
+        console.log(responseData);
+      });
   }
 
-  ngOnInit() {
-    console.log(this.constructor.name + ' ngOnInit started.');
-    //this.fetchPosts();
-
-    this.getPosts();
-  }
-
-  onCreatePost(postData: Post) {
-    // Send Http request
-    //Testing if the postData was received.
-    //console.log(postData);
-
-    this.postsService.createAndStorePost(postData);
-  }
-
-  onFetchPosts() {
-    // Send Http request
-    console.log(this.constructor.name + ' onFetchPosts started.');
-    //this.fetchPosts();
-
-    this.getPosts();
-  }
-
-  onClearPosts() {
-    // Send Http request
-  }
-
-  //This method allow us to get the all Posts.
-  //This logic was transfered to a service and here with the subscription.
-  /*
-  private fetchPosts() {
-    
-    this.isFetching = true;
-
+  getPosts() {
     //The object received from the DB, it is an array of key-value object.
     //Because, we do not know the property name of the key, we use the property placeholder.
     //The property placeholder [] define that we assign the property name key to this string key.
@@ -95,28 +70,9 @@ export class AppComponent implements OnInit, OnDestroy {
         }))
       .subscribe(posts => {
         //console.log(posts);
-        this.isFetching = false;
-        this.loadedPosts = posts;
+        //Implement the Subject (Observable) with subscription to communicate from the Service to the Component.
+        //We send the post array to the subscriber(s).
+        this.postSubject.next(posts);
       });
-  }
-  */
-  private getPosts() {
-    //Implement the Subject (Observable) with subscription to communicate from the Service to the Component.
-    //This subscription will get the post array from the service.
-    this.postsSubscription = this.postsService.postSubject.subscribe(
-      posts => {
-        this.isFetching = false;
-        this.loadedPosts = posts;
-      }
-    );
-
-    //Set the loader spinner.
-    this.isFetching = true;
-    //Get the post from the DB to the Service.
-    this.postsService.getPosts();
-  }
-
-  ngOnDestroy() {
-    this.postsSubscription.unsubscribe();
   }
 }
