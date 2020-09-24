@@ -32,6 +32,15 @@ export class AppComponent implements OnInit, OnDestroy {
     console.log(this.constructor.name + ' ngOnInit started.');
     //this.fetchPosts();
 
+    //Implement the Subject (Observable) with subscription to communicate from the Service to the Component.
+    //This subscription will get the post array from the service.
+    this.postsSubscription = this.postsService.postSubject.subscribe(
+      posts => {
+        this.isFetching = false;
+        this.loadedPosts = posts;
+      }
+    );
+
     this.getPosts();
   }
 
@@ -101,14 +110,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
   */
   private getPosts() {
-    //Implement the Subject (Observable) with subscription to communicate from the Service to the Component.
-    //This subscription will get the post array from the service.
-    this.postsSubscription = this.postsService.postSubject.subscribe(
-      posts => {
-        this.isFetching = false;
-        this.loadedPosts = posts;
-      }
-    );
 
     //Set the loader spinner.
     this.isFetching = true;
