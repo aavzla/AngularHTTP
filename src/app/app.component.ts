@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 //Imported from the angular common http.
 //import { HttpClient } from '@angular/common/http';
 //import { map } from 'rxjs/operators';
@@ -8,6 +8,7 @@ import { Subscription } from 'rxjs';
 import { Post } from './post.model';
 
 import { PostsService } from './posts.service';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +16,7 @@ import { PostsService } from './posts.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit, OnDestroy {
+  @ViewChild('postForm', { static: true }) form: NgForm;
   loadedPosts: Post[];
   isFetching: boolean;
   private postsSubscription: Subscription;
@@ -29,7 +31,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    console.log(this.constructor.name + ' ngOnInit started.');
+    //console.log(this.constructor.name + ' ngOnInit started.');
     //this.fetchPosts();
 
     //Implement the Subject (Observable) with subscription to communicate from the Service to the Component.
@@ -50,18 +52,23 @@ export class AppComponent implements OnInit, OnDestroy {
     //console.log(postData);
 
     this.postsService.createAndStorePost(postData);
+    this.form.reset();
   }
 
   onFetchPosts() {
     // Send Http request
-    console.log(this.constructor.name + ' onFetchPosts started.');
+    //console.log(this.constructor.name + ' onFetchPosts started.');
     //this.fetchPosts();
 
     this.getPosts();
   }
 
   onClearPosts() {
+    //Set the loader spinner.
+    this.isFetching = true;
+
     // Send Http request
+    this.postsService.deletePosts();
   }
 
   //This method allow us to get the all Posts.

@@ -5,14 +5,15 @@ import { map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 import { Post } from './post.model';
-import { title } from 'process';
 
 @Injectable({ providedIn: 'root' })
 export class PostsService {
   postSubject: Subject<Post[]>;
+  postsURL: string;
 
   constructor(private http: HttpClient) {
     this.postSubject = new Subject<Post[]>();
+    this.postsURL = 'https://httpangular-a664a.firebaseio.com/posts.json';
   }
 
   createAndStorePost(
@@ -26,7 +27,7 @@ export class PostsService {
       //.post(
       //V2: Using HTTPClient to handle the recognition and casting of the object from the DB into a Model.
       .post<{ name: string }>(
-        'https://httpangular-a664a.firebaseio.com/posts.json',
+        this.postsURL,
         postData
       )
       // In order to send the POST, Angular demands that we need to subscribe.
@@ -44,9 +45,9 @@ export class PostsService {
     //This will allow us to define the object received and use it. Our model.
     this.http
       //V1: Using TypeScript definition to resolve the definition of the object from the DB into a Model.
-      //.get('https://httpangular-a664a.firebaseio.com/posts.json')
+      //.get(this.postsURL)
       //V2: Using HTTPClient to handle the recognition and casting of the object from the DB into a Model.
-      .get<{ [key: string]: Post }>('https://httpangular-a664a.firebaseio.com/posts.json')
+      .get<{ [key: string]: Post }>(this.postsURL)
       .pipe(map(
         //V1: Using TypeScript definition to resolve the definition of the object from the DB into a Model.
         //(responseData: { [key: string]: Post }) => {
@@ -74,5 +75,19 @@ export class PostsService {
         //We send the post array to the subscriber(s).
         this.postSubject.next(posts);
       });
+  }
+
+  deletePosts() {
+    this.http
+      .delete(this.postsURL)
+      .subscribe(
+        //responseData => {
+        () => {
+          //The responseData is null. So there is no responseData sent.
+          //We could have an function without any parameter.
+          //console.log(responseData);
+          this.postSubject.next([]);
+        }
+      );
   }
 }
