@@ -1,5 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http'
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+  HttpParams
+} from '@angular/common/http'
 import { map, catchError } from 'rxjs/operators';
 //Implement the Subject (Observable) with subscription to communicate from the Service to the Component.
 import { Subject, throwError } from 'rxjs';
@@ -45,6 +50,11 @@ export class PostsService {
   }
 
   getPosts() {
+    //Set up for more than one param.
+    let setupParams = new HttpParams();
+    setupParams = setupParams.append('print', 'pretty');
+    setupParams = setupParams.append('do-nothing', 'exactly');
+
     //The object received from the DB, it is an array of key-value object.
     //Because, we do not know the property name of the key, we use the property placeholder.
     //The property placeholder [] define that we assign the property name key to this string key.
@@ -59,7 +69,11 @@ export class PostsService {
         {
           headers: new HttpHeaders({
             'Custom-Header': 'Hello'
-          })
+          }),
+          //Set up for one param only.
+          //params: new HttpParams().set('print', 'pretty')
+          //Set up for more than one param.
+          params: setupParams 
         }
       )
       .pipe(map(
