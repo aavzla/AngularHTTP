@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http'
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http'
 import { map, catchError } from 'rxjs/operators';
 //Implement the Subject (Observable) with subscription to communicate from the Service to the Component.
 import { Subject, throwError } from 'rxjs';
@@ -52,9 +52,16 @@ export class PostsService {
     //This will allow us to define the object received and use it. Our model.
     this.http
       //V1: Using TypeScript definition to resolve the definition of the object from the DB into a Model.
-      //.get(this.postsURL)
+      //.get(
       //V2: Using HTTPClient to handle the recognition and casting of the object from the DB into a Model.
-      .get<{ [key: string]: Post }>(this.postsURL)
+      .get<{ [key: string]: Post }>(
+        this.postsURL,
+        {
+          headers: new HttpHeaders({
+            'Custom-Header': 'Hello'
+          })
+        }
+      )
       .pipe(map(
         //V1: Using TypeScript definition to resolve the definition of the object from the DB into a Model.
         //(responseData: { [key: string]: Post }) => {
