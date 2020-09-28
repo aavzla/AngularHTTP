@@ -48,6 +48,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.errorSubscription = this.postsService.errorSubject.subscribe(
       errorMessage => {
+        this.isFetching = false;
         this.errorMsg = errorMessage;
       }
     );
