@@ -19,7 +19,9 @@ export class AppComponent implements OnInit, OnDestroy {
   @ViewChild('postForm', { static: true }) form: NgForm;
   loadedPosts: Post[];
   isFetching: boolean;
+  errorMsg: string;
   private postsSubscription: Subscription;
+  private errorSubscription: Subscription;
 
   constructor(
     //Injected to handle HTTP communications.
@@ -28,6 +30,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ) {
     this.loadedPosts = [];
     this.isFetching = false;
+    this.errorMsg = '';
   }
 
   ngOnInit() {
@@ -43,10 +46,19 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     );
 
+    this.errorSubscription = this.postsService.errorSubject.subscribe(
+      errorMessage => {
+        this.errorMsg = errorMessage;
+      }
+    );
+
     this.getPosts();
   }
 
   onCreatePost(postData: Post) {
+    //This allow to reset the error message displayed if there is any.
+    this.resetErrorMessage();
+
     // Send Http request
     //Testing if the postData was received.
     //console.log(postData);
@@ -56,6 +68,9 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   onFetchPosts() {
+    //This allow to reset the error message displayed if there is any.
+    this.resetErrorMessage();
+
     // Send Http request
     //console.log(this.constructor.name + ' onFetchPosts started.');
     //this.fetchPosts();
@@ -64,6 +79,9 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   onClearPosts() {
+    //This allow to reset the error message displayed if there is any.
+    this.resetErrorMessage();
+
     //Set the loader spinner.
     this.isFetching = true;
 
@@ -124,7 +142,12 @@ export class AppComponent implements OnInit, OnDestroy {
     this.postsService.getPosts();
   }
 
+  private resetErrorMessage() {
+    this.errorMsg = '';
+  }
+
   ngOnDestroy() {
     this.postsSubscription.unsubscribe();
+    this.errorSubscription.unsubscribe();
   }
 }

@@ -9,10 +9,12 @@ import { Post } from './post.model';
 @Injectable({ providedIn: 'root' })
 export class PostsService {
   postSubject: Subject<Post[]>;
+  errorSubject: Subject<string>;
   postsURL: string;
 
   constructor(private http: HttpClient) {
     this.postSubject = new Subject<Post[]>();
+    this.errorSubject = new Subject<string>();
     this.postsURL = 'https://httpangular-a664a.firebaseio.com/posts.json';
   }
 
@@ -34,6 +36,11 @@ export class PostsService {
       // It could be an empty subscription without the call back if we wanted.
       .subscribe(responseData => {
         console.log(responseData);
+      }, error => {
+        //Get the error on the console to display the full error
+        console.log(this.constructor.name + " - Error on createAndStorePost.", error);
+        //Send the error message to the subscribers
+        this.errorSubject.next(error.message);
       });
   }
 
@@ -74,6 +81,11 @@ export class PostsService {
         //Implement the Subject (Observable) with subscription to communicate from the Service to the Component.
         //We send the post array to the subscriber(s).
         this.postSubject.next(posts);
+      }, error => {
+        //Get the error on the console to display the full error
+        console.log(this.constructor.name + " - Error on getPosts.", error);
+        //Send the error message to the subscribers
+        this.errorSubject.next(error.message);
       });
   }
 
@@ -87,6 +99,11 @@ export class PostsService {
           //We could have an function without any parameter.
           //console.log(responseData);
           this.postSubject.next([]);
+        }, error => {
+          //Get the error on the console to display the full error
+          console.log(this.constructor.name + " - Error on deletePosts.", error);
+          //Send the error message to the subscribers
+          this.errorSubject.next(error.message);
         }
       );
   }
