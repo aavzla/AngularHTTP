@@ -87,7 +87,10 @@ export class PostsService {
           //Set up for one param only.
           //params: new HttpParams().set('print', 'pretty')
           //Set up for more than one param.
-          params: setupParams
+          params: setupParams,
+          //The responseType allows you to change the result format of the HttpResponse.
+          //The default behavior is JSON, but you have 'text' to have it transformed to text and 'blob' in a case of a file.
+          responseType: 'json'
         }
       )
       .pipe(map(
@@ -147,7 +150,10 @@ export class PostsService {
           //The body value will give you the default behavior of giving the body of the HttpResponse(the data).
           //The events value will give us the event type of the HttpResponse.
           //The response value will give you access to the Full HttpResponse.
-          observe: 'events'
+          observe: 'events',
+          //The responseType allows you to change the result format of the HttpResponse.
+          //The default behavior is JSON, but you have 'text' to have it transformed to text and 'blob' in a case of a file.
+          responseType: 'json'
         }
       )
       .pipe(
