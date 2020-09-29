@@ -15,8 +15,17 @@ export class AuthInterceptorService implements HttpInterceptor {
     //To display the functionality of the interceptor, we log the request.
     console.log(this.constructor.name + ' - Request is on its way.', req);
 
+    //We log the original request URL.
+    console.log(this.constructor.name + ' - Request URL.', req.url);
+
+    //We modify the HttpRequest to append the key-value to the header.
+    //The 'Auth' and 'xyz' does nothing regarding Authentication, this is to prove that we can modify the header.
+    const modifiedRequest = req.clone({
+      headers: req.headers.append('Auth', 'xyz')
+    });
+
     //The HttpHandler with his method handle will allow the HttpRequest to continue it's flow to exit the application, make the Http call.
     //It is very important to have this in order to avoid any interruption on the calls.
-    return next.handle(req);
+    return next.handle(modifiedRequest);
   }
 }
