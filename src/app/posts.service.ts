@@ -3,9 +3,14 @@ import {
   HttpClient,
   HttpErrorResponse,
   HttpHeaders,
-  HttpParams
+  HttpParams,
+  HttpEventType
 } from '@angular/common/http'
-import { map, catchError } from 'rxjs/operators';
+import {
+  map,
+  catchError,
+  tap
+} from 'rxjs/operators';
 //Implement the Subject (Observable) with subscription to communicate from the Service to the Component.
 import { Subject, throwError } from 'rxjs';
 
@@ -35,12 +40,21 @@ export class PostsService {
       //V2: Using HTTPClient to handle the recognition and casting of the object from the DB into a Model.
       .post<{ name: string }>(
         this.postsURL,
-        postData
+        postData,
+        {
+          //The body value will give you the default behavior of giving the body of the HttpResponse(the data).
+          //The events value will give us the event type of the HttpResponse.
+          //The response value will give you access to the Full HttpResponse.
+          observe: 'response'
+        }
       )
       // In order to send the POST, Angular demands that we need to subscribe.
       // It could be an empty subscription without the call back if we wanted.
       .subscribe(responseData => {
-        console.log(responseData);
+        console.log(this.constructor.name + " -  The responseData object received.", responseData);
+        //In the case of having the option observe with the value response,
+        //this log will give us access to the data inside the body of the HttpResponse.
+        console.log(this.constructor.name + " -  Option observe with response. The body of the HttpResponse.", responseData.body);
       }, error => {
         //Get the error on the console to display the full error
         console.log(this.constructor.name + " - Error on createAndStorePost.", error);
@@ -73,7 +87,7 @@ export class PostsService {
           //Set up for one param only.
           //params: new HttpParams().set('print', 'pretty')
           //Set up for more than one param.
-          params: setupParams 
+          params: setupParams
         }
       )
       .pipe(map(
@@ -127,7 +141,34 @@ export class PostsService {
 
   deletePosts() {
     this.http
-      .delete(this.postsURL)
+      .delete(
+        this.postsURL,
+        {
+          //The body value will give you the default behavior of giving the body of the HttpResponse(the data).
+          //The events value will give us the event type of the HttpResponse.
+          //The response value will give you access to the Full HttpResponse.
+          observe: 'events'
+        }
+      )
+      .pipe(
+        //the tab operator simply allows us to execute some code without altering the response.
+        tap(
+          event => {
+            //This line of code will give us two console logs.
+            //The event type log and the log of the HttpResponse.
+            console.log(this.constructor.name + " -  Option observe with events. The type and body of the HttpResponse.", event);
+            //If the event is type Sent, we can log the Type
+            //Or, Update something in the UI to basically inform the user that request was now sent and you're waiting for the response.
+            if (event.type === HttpEventType.Sent) {
+              console.log(this.constructor.name + " -  Option observe with events. The event type is Sent. The type of the HttpResponse.", event.type);
+            }
+            //If the event is type Response, we can log the body (the data)
+            if (event.type === HttpEventType.Response) {
+              console.log(this.constructor.name + " -  Option observe with events. The event type is Response. The body of the HttpResponse.", event.body);
+            }
+          }
+        )
+      )
       .subscribe(
         //responseData => {
         () => {
