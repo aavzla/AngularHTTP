@@ -6,6 +6,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { AuthInterceptorService } from './auth-interceptor.service';
+import { LoggingInterceptorService } from './logging-interceptor.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -22,6 +23,17 @@ import { AuthInterceptorService } from './auth-interceptor.service';
       provide: HTTP_INTERCEPTORS,
       //Interceptor Service registration
       useClass: AuthInterceptorService,
+      //Identification that more than one Interceptor could be live, avoid replacements.
+      multi: true
+    },
+    //The order of the interceptors here will define the order of execution.
+    //In this case, the Auth will execute first before the Logging.
+    {
+      //Identifier of the Interceptors.
+      //This must be place for all interceptors as this is the key to identify them.
+      provide: HTTP_INTERCEPTORS,
+      //Interceptor Service registration
+      useClass: LoggingInterceptorService,
       //Identification that more than one Interceptor could be live, avoid replacements.
       multi: true
     }
