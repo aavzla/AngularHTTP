@@ -104,9 +104,9 @@ export class AppComponent implements OnInit, OnDestroy {
     //This will allow us to define the object received and use it. Our model.
     this.http
       //V1: Using TypeScript definition to resolve the definition of the object from the DB into a Model.
-      //.get('https://httpangular-a664a.firebaseio.com/posts.json')
+      //.get('https://httpangular-3e0c9-default-rtdb.firebaseio.com/posts.json')
       //V2: Using HTTPClient to handle the recognition and casting of the object from the DB into a Model.
-      .get<{ [key: string]: Post }>('https://httpangular-a664a.firebaseio.com/posts.json')
+      .get<{ [key: string]: Post }>('https://httpangular-3e0c9-default-rtdb.firebaseio.com/posts.json')
       .pipe(map(
         //V1: Using TypeScript definition to resolve the definition of the object from the DB into a Model.
         //(responseData: { [key: string]: Post }) => {

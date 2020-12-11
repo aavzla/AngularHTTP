@@ -25,7 +25,7 @@ export class PostsService {
   constructor(private http: HttpClient) {
     this.postSubject = new Subject<Post[]>();
     this.errorSubject = new Subject<string>();
-    this.postsURL = 'https://httpangular-a664a.firebaseio.com/posts.json';
+    this.postsURL = 'https://httpangular-3e0c9-default-rtdb.firebaseio.com/posts.json';
   }
 
   createAndStorePost(
